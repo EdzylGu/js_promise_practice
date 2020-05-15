@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--  schedule.ejs          -->
+<!--  Author: Edzyl. Gu,    -->
+<!--  Update: 20190218      -->
+<!--  Ver   : v1.5.0        -->
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  <script>
+    function getvalueA(callback) {
+      let a = 10;
+      return Promise.race([getvalueB(function (value) {
+        $("#result").append("b=" + value + '<br>');
+      }), timeoutPromise(10000)]).then(
+        function fulfilled(result) {
+          return new Promise(function (resolve, reject) {
+            setTimeout(() => {
+              callback(a);
+              resolve(a + result);
+            }, 1000);
+          });
+        },
+        function rejected(err) {
+          // Timeout then be rejected
+          $("#result").append(err);
+        },
+      );
+    }
+
+    function getvalueB(callback) {
+      let b = 12;
+      return new Promise(function (resolve, reject) {
+        setTimeout(() => {
+          callback(b);
+          resolve(b);
+        }, 3000);
+      });
+    }
+
+    function timeoutPromise(delay) {
+      return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+          reject('Request Timeout');
+        }, delay);
+      });
+    }
+
+    function Plus() {
+      return Promise.race([getvalueA(function (value) {
+        $("#result").append("a=" + value + '<br>');
+      }), timeoutPromise(10000)]).then(
+        function fulfilled(result) {
+          return new Promise(function (resolve, reject) {
+            setTimeout(() => {
+              resolve(result)
+            }, 1000);
+          });
+        },
+        function rejected(err) {
+          // Timeout then be rejected
+          $("#result").append(err);
+        },
+      );
+    }
+
+    Promise.race([Plus(), timeoutPromise(100000)]).then(
+      function fulfilled(result) {
+        $("#result").append("a+b=" + result + '<br>');
+      },
+      function rejected(err) {
+        // Timeout then be rejected
+        $("#result").append(err);
+      },
+    );
+  </script>
+</head>
+
+<body>
+  <div id="result">
+    start<br />
+  </div>
+</body>
+
+</html>
